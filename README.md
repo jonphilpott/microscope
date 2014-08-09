@@ -11,4 +11,5 @@ The app
 * 'c' - switch channel r/g/b
 * 's' - save screen capture
 * 'z' - alter zoom factor
+* 'b' - switch between colour and b/w in the zoomed images.
 

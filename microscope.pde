@@ -6,8 +6,10 @@ PImage grey_image;
 PImage zoom_image1;
 PImage zoom_image2;
 
+PImage zimg;
+
 int ZOOM_FACTOR_1 = 2;
-int ZOOM_FACTOR_2 = 4;
+int ZOOM_FACTOR_2 = 1;
 
 int ZF_1_X = (640 - (640 / ZOOM_FACTOR_1)) / 2;
 int ZF_1_Y = (480 - (480 / ZOOM_FACTOR_1)) / 2;
@@ -19,7 +21,10 @@ int ZF_2_Y = (480 - (480 / ZOOM_FACTOR_2)) / 2;
 
 int shift_width = 0;
 int k = 0;
+String k_name;
 int z = 0;
+
+boolean use_grey_image = true;
 
 
 void setup() {
@@ -56,21 +61,57 @@ void draw() {
       }
     }
     grey_image.updatePixels();
-    zoom_image1 = grey_image.get(ZF_1_X, ZF_1_Y, 640/ZOOM_FACTOR_1, 480/ZOOM_FACTOR_1);
-    zoom_image2 = grey_image.get(ZF_2_X, ZF_2_Y, 640/ZOOM_FACTOR_2, 480/ZOOM_FACTOR_2);
 
+    if (use_grey_image) {
+       zimg = grey_image;
+    }
+    else {
+      zimg = cam;
+    }
+
+    zoom_image1 = zimg.get(ZF_1_X, ZF_1_Y, 640/ZOOM_FACTOR_1, 480/ZOOM_FACTOR_1);
+    zoom_image2 = zimg.get(ZF_2_X, ZF_2_Y, 640/ZOOM_FACTOR_2, 480/ZOOM_FACTOR_2);
+
+    noFill();
+    stroke(0, 255, 0);
+    rect(ZF_1_X, ZF_1_Y, 640/ZOOM_FACTOR_1, 480/ZOOM_FACTOR_1);
+    stroke(255, 0 , 0); 
+    rect(ZF_2_X, ZF_2_Y, 640/ZOOM_FACTOR_2, 480/ZOOM_FACTOR_2);
+    
+    
+    
+    
     image(grey_image, 640, 0);
     
+    switch(k) {
+      case 0: k_name = "R"; break;
+      case 1: k_name = "G"; break;
+      case 2: k_name = "B"; break;
+    }      
+    
+    textSize(32);
+    text(k_name, 640, 32);
+    
+    strokeWeight(1);
     pushMatrix();
     translate(0, 480);
+    pushMatrix();
     scale(ZOOM_FACTOR_1);
     image(zoom_image1, 0, 0);
+    popMatrix();
+    stroke(0, 255, 0);
+    rect(0,0, 640, 480);
     popMatrix();
     
     pushMatrix();
     translate(640, 480);
+    pushMatrix();
     scale(ZOOM_FACTOR_2);
     image(zoom_image2, 0, 0);
+    popMatrix();
+    stroke(255, 0, 0);
+    rect(1,0, 640, 480);
+    text(ZOOM_FACTOR_2 + "x", 0, 32);
     popMatrix();
   } 
 }
@@ -88,13 +129,18 @@ void keyPressed() {
     }
     
     if (key == 'z') {
-      ZOOM_FACTOR_2 = 1 + (ZOOM_FACTOR_2 + 1) % 12;
+      z = (z + 1) % 16;
+      ZOOM_FACTOR_2 = 1 + z;
       ZF_2_X = (640 - (640 / ZOOM_FACTOR_2)) / 2;
       ZF_2_Y = (480 - (480 / ZOOM_FACTOR_2)) / 2;
     }
     
     if (key == 's') {
       save(getFilename());
+    }
+  
+    if (key == 'b') {
+      use_grey_image = !use_grey_image;
     }
   
 }
